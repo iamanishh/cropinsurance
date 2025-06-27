@@ -1,0 +1,249 @@
+/* Move all custom styles from HTML to this CSS file for better structure and maintainability */
+body {
+  background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+  font-family: "Baloo 2", "Segoe UI", Arial, sans-serif;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1.2s;
+}
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+input,
+select,
+button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  border: 1px solid #e3e3e3;
+  animation: popIn 1s;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.main-content-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.form-section {
+  flex: 2 1 340px;
+  min-width: 320px;
+  animation: slideLeft 1.2s;
+}
+
+.list-section {
+  flex: 1 1 320px;
+  background: #f8fafc;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 18px #e3e3e3;
+  margin-top: 0;
+  height: auto;
+  min-width: 280px;
+  max-width: 350px;
+  animation: slideRight 1.2s;
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.icon {
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+.list-section h3 {
+  font-size: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.list-group-item {
+  font-size: 1.08rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  margin-bottom: 0.5em;
+  box-shadow: 0 2px 8px #e3e3e3;
+  transition: transform 0.2s;
+}
+
+.list-group-item:hover {
+  transform: scale(1.03);
+  background: #e0eafc;
+}
+
+.badge {
+  font-size: 1em;
+  background: linear-gradient(90deg, #4f8cff 0%, #38e4ae 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px #b3e5fc;
+}
+
+.btn-primary,
+.btn-success {
+  font-size: 1.1em;
+  border-radius: 1.2em;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #38e4ae 0%, #4f8cff 100%);
+}
+
+.form-control {
+  border-radius: 1em;
+  font-size: 1.08em;
+}
+
+.text-primary {
+  font-family: "Baloo 2", cursive;
+  font-size: 2.1rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+@media (max-width: 991px) {
+  .main-content-row {
+    flex-wrap: wrap;
+  }
+  .list-section {
+    margin: 2rem auto 0 auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .main-content-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .form-section,
+  .list-section {
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+  .card {
+    border-radius: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .list-section {
+    margin-top: 0;
+    padding: 0.5rem 0.2rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1400px;
+    position: relative;
+    padding-top: 2rem;
+  }
+  .main-content-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0;
+    position: static;
+  }
+  .form-section {
+    max-width: 600px;
+    flex: 1 1 600px;
+    z-index: 1;
+    margin-right: 0;
+  }
+  .list-section {
+    max-width: 400px;
+    flex: 0 0 400px;
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+    margin: 0;
+    z-index: 10;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  }
+}
+
+@media (max-width: 1199px) {
+  .main-content-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2rem;
+  }
+  .form-section,
+  .list-section {
+    max-width: 100%;
+    margin: 0 auto;
+    position: static;
+  }
+}

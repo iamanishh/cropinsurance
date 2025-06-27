@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="mr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>पीक विमा हिशोब</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <style>
+      .footer-custom {
+        background: #fff8e1;
+        border-top: 2px solid #ff9800;
+        font-family: "Baloo 2", cursive;
+      }
+      .footer-custom a {
+        transition: color 0.2s;
+      }
+      .footer-custom a:hover {
+        color: #ff9800 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-1">
+      <div class="main-content-row">
+        <div class="form-section">
+          <div class="card shadow-lg mb-4">
+            <div class="card-body">
+              <h2 class="mb-2 text-center text-primary">पीक विमा हिशोब</h2>
+              <!-- Crop selection -->
+              <div
+                class="fw-bold mb-1 w-100 text-center text-warning"
+                style="font-size: 1.2rem"
+              >
+                श्री ऑनलाइन सर्विस सेंटर
+              </div>
+              <div class="mb-3 row align-items-center">
+                <label class="col-sm-3 col-form-label fw-bold"
+                  >पिक निवडा:</label
+                >
+                <div class="col-sm-9">
+                  <select class="form-select" [(ngModel)]="selectedCrop">
+                    <option value="" disabled selected hidden>
+                      -- पिक निवडा --
+                    </option>
+                    <option *ngFor="let crop of getCropList()" [value]="crop">
+                      {{ crop }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Set premium (Save Crop) section -->
+              <div class="mb-3 row align-items-center">
+                <label class="col-sm-6 col-form-label fw-bold"
+                  >1 हेक्टर साठी विमा रक्कम:</label
+                >
+                <div class="col-sm-6">
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="enteredPremium"
+                    placeholder="उदा. 1000"
+                    [ngModel]="
+                      enteredPremium === 0 || enteredPremium == null
+                        ? null
+                        : enteredPremium
+                    "
+                  />
+                </div>
+                <div class="col-sm-4">
+                  <button
+                    class="btn btn-success w-100"
+                    (click)="setPremiumForCrop()"
+                    [disabled]="
+                      !selectedCrop || !enteredPremium || enteredPremium <= 0
+                    "
+                  >
+                    जतन करा
+                  </button>
+                </div>
+              </div>
+
+              <hr />
+
+              <!-- Calculation section -->
+              <div class="mb-3 row align-items-center">
+                <label class="col-sm-4 col-form-label fw-bold"
+                  >हिशोबासाठी पिक निवडा:</label
+                >
+                <div class="col-sm-8">
+                  <select class="form-select" [(ngModel)]="selectedCalcCrop">
+                    <option value="" disabled selected hidden>
+                      -- पिक निवडा --
+                    </option>
+                    <option *ngFor="let crop of getCropList()" [value]="crop">
+                      {{ crop }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3 row align-items-center">
+                <label class="col-sm-4 col-form-label fw-bold"
+                  >जमीन क्षेत्र (हेक्टर):</label
+                >
+                <div class="col-sm-8">
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="landArea"
+                    placeholder="उदा. १"
+                    [ngModel]="
+                      landArea === 0 || landArea == null ? null : landArea
+                    "
+                  />
+                </div>
+              </div>
+              <div class="mb-3 row align-items-center">
+                <label class="col-sm-4 col-form-label fw-bold"
+                  >अतिरिक्त रक्कम:</label
+                >
+                <div class="col-sm-8">
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="extraAmount"
+                    placeholder="उदा. ५०"
+                    [ngModel]="
+                      extraAmount === 0 || extraAmount == null
+                        ? null
+                        : extraAmount
+                    "
+                  />
+                </div>
+              </div>
+              <div class="text-center mb-3">
+                <button
+                  class="btn btn-primary px-4"
+                  (click)="calculatePremium()"
+                  [disabled]="
+                    !selectedCalcCrop ||
+                    !landArea ||
+                    landArea <= 0 ||
+                    !cropPremiumMap[selectedCalcCrop] ||
+                    cropPremiumMap[selectedCalcCrop] <= 0
+                  "
+                >
+                  हिशेब करा
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="list-section w-100">
+          <div class="card shadow-lg">
+            <div class="card-body">
+              <h3 class="text-success text-center mb-3">
+                <svg
+                  class="icon"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
+                  />
+                </svg>
+                सेव्ह केलेली पिके व विमा रक्कम
+              </h3>
+              <ul class="list-group mb-0">
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center"
+                  *ngFor="let item of getSavedCrops()"
+                >
+                  <div class="d-flex align-items-center gap-2">
+                    <svg class="icon" fill="#38e4ae" viewBox="0 0 24 24">
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
+                      />
+                    </svg>
+                    <span>{{ item.crop }}</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary rounded-pill"
+                      >₹{{ item.premium }}</span
+                    >
+                    <button
+                      class="btn btn-outline-danger btn-sm ms-2 m-0"
+                      (click)="removeCrop(item.crop)"
+                    >
+                      काढा
+                    </button>
+                  </div>
+                </li>
+              </ul>
+              <div
+                *ngIf="totalAmount > 0"
+                class="alert alert-info text-center mt-3"
+              >
+                <p class="mb-1">
+                  प्रति हेक्टर विमा रक्कम:
+                  <span class="fw-bold">₹{{ premiumPerAcre.toFixed(2) }}</span>
+                </p>
+                <p class="mb-0">
+                  एकूण रक्कम:
+                  <span class="fw-bold">
+                    <h4>₹{{ totalAmount }}</h4></span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="row w-100 px-2 align-items-center text-center text-md-start"
+        >
+          <div class="col-md-4 mb-2 mb-md-0">
+            <div class="fw-bold text-warning" style="font-size: 1.2rem">
+              श्री ऑनलाइन सर्विस सेंटर
+            </div>
+            <div class="small text-muted mt-1">
+              पिंपळगाव (डुब्बा) ता. नेर जि. यवतमाळ
+            </div>
+          </div>
+          <div class="col-md-4 m-0 p-0">
+            <span class="me-2"
+              ><i class="bi bi-telephone-fill text-success"></i
+            ></span>
+            <a
+              href="tel:9579547337"
+              class="text-decoration-none text-dark fw-bold"
+              >9579547337</a
+            >
+            <span class="mx-2">|</span>
+            <span class="me-2"
+              ><i class="bi bi-whatsapp text-success"></i
+            ></span>
+            <a
+              href="https://wa.me/919579547337"
+              class="text-decoration-none text-success fw-bold"
+              >9579547337</a
+            >
+          </div>
+          <div class="col-md-4">
+            <div>
+              <span class="me-2"
+                ><i class="bi bi-envelope-fill text-primary"></i
+              ></span>
+              <a
+                href="mailto:manishmane4991@gmail.com"
+                class="text-decoration-none text-dark fw-bold"
+                >माझा ईमेल: manish4991&#64;gmail.com</a
+              >
+            </div>
+          </div>
+        </div>
+        <div class="small text-center w-100 text-muted">
+          © 2025 Software Engineer Ashish Mane. All rights reserved.
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
