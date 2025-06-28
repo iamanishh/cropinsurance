@@ -45,7 +45,10 @@
               >
                 श्री ऑनलाइन सर्विस सेंटर
               </div>
-              <div class="mb-3 row align-items-center">
+              <div
+                class="mb-3 row align-items-center"
+                *ngIf="showPremiumInput()"
+              >
                 <label class="col-sm-3 col-form-label fw-bold"
                   >पिक निवडा:</label
                 >
@@ -62,7 +65,10 @@
               </div>
 
               <!-- Set premium (Save Crop) section -->
-              <div class="mb-3 row align-items-center">
+              <div
+                *ngIf="showPremiumInput()"
+                class="mb-3 row align-items-center"
+              >
                 <label class="col-sm-6 col-form-label fw-bold"
                   >1 हेक्टर साठी विमा रक्कम:</label
                 >
@@ -92,72 +98,91 @@
                 </div>
               </div>
 
-              <hr />
-
-              <!-- Calculation section -->
-              <div class="mb-3 row align-items-center">
-                <label class="col-sm-4 col-form-label fw-bold"
-                  >हिशोबासाठी पिक निवडा:</label
-                >
-                <div class="col-sm-8">
-                  <select class="form-select" [(ngModel)]="selectedCalcCrop">
-                    <option value="" disabled selected hidden>
-                      -- पिक निवडा --
-                    </option>
-                    <option *ngFor="let crop of getCropList()" [value]="crop">
-                      {{ crop }}
-                    </option>
-                  </select>
+              <div class="mb-4">
+                <div class="">
+                  <h4 class="mb-3 text-center text-success">
+                    सर्व पिकांसाठी हिशोब
+                  </h4>
+                  <form (ngSubmit)="calculateAllCrops()">
+                    <div class="row fw-bold mb-2">
+                      <div class="col-4">पीक</div>
+                      <div class="col-4">जमीन (हेक्टर)</div>
+                      <div class="col-4">रक्कम</div>
+                    </div>
+                    <div
+                      *ngFor="let crop of getCropList(); let i = index"
+                      class="row align-items-center mb-2"
+                    >
+                      <div class="col-4">
+                        <span class="badge bg-secondary me-2">{{ i + 1 }}</span>
+                        {{ crop }}
+                      </div>
+                      <div class="col-4">
+                        <input
+                          type="number"
+                          min="0"
+                          class="form-control"
+                          [(ngModel)]="landAreas[crop]"
+                          name="land_{{ crop }}"
+                          placeholder="हेक्टर"
+                          (input)="calculateAllCrops()"
+                        />
+                      </div>
+                      <div class="col-4">
+                        <span>
+                          = &nbsp; ₹{{
+                            cropPremiumMap[crop] && landAreas[crop]
+                              ? cropPremiumMap[crop] * landAreas[crop]
+                              : 0
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="row align-items-center mb-2 mt-3">
+                      <div class="col-6 fw-bold">अतिरिक्त रक्कम:</div>
+                      <div class="col-6">
+                        <input
+                          type="number"
+                          min="0"
+                          class="form-control"
+                          [(ngModel)]="extraAmount"
+                          name="extraAmount"
+                          placeholder="उदा. ५०"
+                          (input)="calculateAllCrops()"
+                        />
+                      </div>
+                    </div>
+                    <div class="row mb-3 mt-3">
+                      <div class="col-6 d-flex justify-content-end">
+                        <button
+                          type="button"
+                          class="btn btn-primary px-4 me-2"
+                          (click)="calculateAllCrops()"
+                        >
+                          एकूण रक्कम
+                        </button>
+                      </div>
+                      <div class="col-6 d-flex justify-content-start">
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger rounded-pill px-4"
+                          (click)="resetAllCrops()"
+                        >
+                          रीसेट करा
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                  <div
+                    *ngIf="finalTotal > 0"
+                    class="alert alert-info text-center mt-3"
+                  >
+                    <h5>
+                      एकूण रक्कम:
+                      <span class="fw-bold">₹{{ finalTotal }}</span>
+                    </h5>
+                  </div>
                 </div>
-              </div>
-              <div class="mb-3 row align-items-center">
-                <label class="col-sm-4 col-form-label fw-bold"
-                  >जमीन क्षेत्र (हेक्टर):</label
-                >
-                <div class="col-sm-8">
-                  <input
-                    type="number"
-                    class="form-control"
-                    [(ngModel)]="landArea"
-                    placeholder="उदा. १"
-                    [ngModel]="
-                      landArea === 0 || landArea == null ? null : landArea
-                    "
-                  />
-                </div>
-              </div>
-              <div class="mb-3 row align-items-center">
-                <label class="col-sm-4 col-form-label fw-bold"
-                  >अतिरिक्त रक्कम:</label
-                >
-                <div class="col-sm-8">
-                  <input
-                    type="number"
-                    class="form-control"
-                    [(ngModel)]="extraAmount"
-                    placeholder="उदा. ५०"
-                    [ngModel]="
-                      extraAmount === 0 || extraAmount == null
-                        ? null
-                        : extraAmount
-                    "
-                  />
-                </div>
-              </div>
-              <div class="text-center mb-3">
-                <button
-                  class="btn btn-primary px-4"
-                  (click)="calculatePremium()"
-                  [disabled]="
-                    !selectedCalcCrop ||
-                    !landArea ||
-                    landArea <= 0 ||
-                    !cropPremiumMap[selectedCalcCrop] ||
-                    cropPremiumMap[selectedCalcCrop] <= 0
-                  "
-                >
-                  हिशेब करा
-                </button>
               </div>
             </div>
           </div>
@@ -182,9 +207,10 @@
               <ul class="list-group mb-0">
                 <li
                   class="list-group-item d-flex justify-content-between align-items-center"
-                  *ngFor="let item of getSavedCrops()"
+                  *ngFor="let item of getSavedCrops(); let i = index"
                 >
                   <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary me-2">{{ i + 1 }}</span>
                     <svg class="icon" fill="#38e4ae" viewBox="0 0 24 24">
                       <path
                         d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
@@ -197,32 +223,28 @@
                       >₹{{ item.premium }}</span
                     >
                     <button
-                      class="btn btn-outline-danger btn-sm ms-2 m-0"
+                      class="btn btn-outline-danger btn-sm ms-2 m-0 d-flex align-items-center gap-1"
                       (click)="removeCrop(item.crop)"
                     >
-                      काढा
+                      <i class="bi bi-x-lg"></i>
                     </button>
                   </div>
                 </li>
               </ul>
               <div
-                *ngIf="totalAmount > 0"
+                *ngIf="finalTotal > 0"
                 class="alert alert-info text-center mt-3"
               >
-                <p class="mb-1">
-                  प्रति हेक्टर विमा रक्कम:
-                  <span class="fw-bold">₹{{ premiumPerAcre.toFixed(2) }}</span>
-                </p>
-                <p class="mb-0">
+                <h5>
                   एकूण रक्कम:
-                  <span class="fw-bold">
-                    <h4>₹{{ totalAmount }}</h4></span
-                  >
-                </p>
+                  <span class="fw-bold">₹{{ finalTotal }}</span>
+                </h5>
               </div>
             </div>
           </div>
         </div>
+        <!-- All Crops Calculation Card -->
+
         <div
           class="row w-100 px-2 align-items-center text-center text-md-start"
         >

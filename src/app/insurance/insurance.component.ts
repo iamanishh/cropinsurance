@@ -22,15 +22,11 @@ export class InsuranceComponent {
 
   selectedCalcCrop = '';
 
-  cropList: string[] = [
-    'सोयाबीन',
-    'तूर',
-    'कापूस',
-    'मूग',
-    'उडीद',
-    'बाजरी',
-    'ज्वारी',
-  ];
+  cropList: string[] = ['सोयाबीन', 'तूर', 'कापूस', 'मूग', 'उडीद'];
+
+  landAreas: { [key: string]: number } = {};
+  cropAmounts: { [key: string]: number } = {};
+  finalTotal = 0;
 
   constructor(private toastr: ToastrService) {}
 
@@ -110,6 +106,23 @@ export class InsuranceComponent {
     this.totalAmount = Math.round(base + this.extraAmount);
   }
 
+  calculateAllCrops() {
+    this.cropAmounts = {};
+    let sum = 0;
+    for (const crop of this.getCropList()) {
+      const area = this.landAreas[crop] || 0;
+      const premium = this.cropPremiumMap[crop] || 0;
+      if (area > 0 && premium > 0) {
+        const amt = premium * area;
+        this.cropAmounts[crop] = amt;
+        sum += amt;
+      } else {
+        this.cropAmounts[crop] = 0;
+      }
+    }
+    this.finalTotal = Math.round(sum + (this.extraAmount || 0));
+  }
+
   getSavedCrops(): { crop: string; premium: number }[] {
     return Object.entries(this.cropPremiumMap).map(([crop, premium]) => ({
       crop,
@@ -120,6 +133,19 @@ export class InsuranceComponent {
   removeCrop(crop: string) {
     delete this.cropPremiumMap[crop];
     localStorage.setItem('cropPremiumMap', JSON.stringify(this.cropPremiumMap));
+  }
+
+  showPremiumInput(): boolean {
+    return this.getCropList().some((crop) => !(crop in this.cropPremiumMap));
+  }
+
+  resetAllCrops() {
+    for (const crop of this.getCropList()) {
+      this.landAreas[crop] = 0;
+      this.cropAmounts[crop] = 0;
+    }
+    this.extraAmount = 0;
+    this.finalTotal = 0;
   }
 }
 
